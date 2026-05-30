@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage All Bookings | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" style="border-bottom: 2px solid var(--danger);">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap" style="color:var(--danger);"></i>
+      <span>CampusConnect <span style="font-size:0.75rem; color:var(--danger); border:1px solid var(--danger); padding:2px 6px; border-radius:4px; margin-left:6px;">ADMIN</span></span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage-events.html">Manage Events</a></li>
+      <li><a href="manage-venues.html">Venues</a></li>
+      <li><a href="manage-departments.html">Departments</a></li>
+      <li><a href="bookings.html" class="active">All Bookings</a></li>
+      <li><a href="manage-users.html">Users</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="user-profile-menu" style="display:flex; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem; color:var(--danger);">Admin Console</span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div style="margin-bottom:30px;">
+      <h1 style="font-size:2.2rem; margin-bottom:10px;">Event Reservations</h1>
+      <p style="color:var(--text-secondary);">Browse, audit, and cancel student ticket reservations across all campus activities.</p>
+    </div>
+
+    <!-- Bookings Table Panel -->
+    <section class="glass" style="padding:30px;">
+      <div id="admin-bookings-table-wrapper" class="table-responsive" style="display:none;">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Student Name</th>
+              <th>Email</th>
+              <th>Event Title</th>
+              <th>Department</th>
+              <th>Venue</th>
+              <th>Event Date</th>
+              <th>Event Time</th>
+              <th>Seats</th>
+              <th>Booking Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admin-bookings-tbody">
+            <!-- Dynamic bookings lists injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Loading State -->
+      <div id="admin-bookings-loading" style="text-align:center; padding:40px;">
+        <div class="loader-spinner"></div>
+        <p style="margin-top:15px; color:var(--text-secondary);">Auditing bookings records...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="admin-bookings-empty" style="text-align:center; padding:50px; display:none;">
+        <i class="fa-solid fa-ticket" style="font-size:3.5rem; color:var(--text-muted); margin-bottom:15px;"></i>
+        <h3 style="font-size:1.2rem; margin-bottom:10px;">No bookings made yet</h3>
+        <p style="color:var(--text-secondary);">Reservations will populate as students book seats for events.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. Secured Admin Environment.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

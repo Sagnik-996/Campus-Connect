@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Venues | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" style="border-bottom: 2px solid var(--danger);">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap" style="color:var(--danger);"></i>
+      <span>CampusConnect <span style="font-size:0.75rem; color:var(--danger); border:1px solid var(--danger); padding:2px 6px; border-radius:4px; margin-left:6px;">ADMIN</span></span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage-events.html">Manage Events</a></li>
+      <li><a href="manage-venues.html" class="active">Venues</a></li>
+      <li><a href="manage-departments.html">Departments</a></li>
+      <li><a href="bookings.html">All Bookings</a></li>
+      <li><a href="manage-users.html">Users</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="user-profile-menu" style="display:flex; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem; color:var(--danger);">Admin Console</span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div style="margin-bottom:30px;">
+      <h1 style="font-size:2.2rem; margin-bottom:10px;">Manage Hosting Venues</h1>
+      <p style="color:var(--text-secondary);">Manage campus locations, buildings, and seating limits for event scheduling.</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 2fr; gap:30px; align-items:start;">
+      <!-- Venue Form -->
+      <div class="glass" style="padding:30px;">
+        <h3 id="venue-form-title" style="font-size:1.2rem; margin-bottom:20px; border-bottom:1px solid var(--glass-border); padding-bottom:10px;">Add New Venue</h3>
+        <form id="venue-manager-form">
+          <input type="hidden" id="venue-id-hidden" value="">
+          <div class="form-group">
+            <label class="form-label" for="venue-name">Venue Name</label>
+            <input type="text" id="venue-name" class="form-control" placeholder="e.g. Auditorium Hall A" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="venue-location">Location / Block</label>
+            <input type="text" id="venue-location" class="form-control" placeholder="e.g. Block C, 3rd Floor" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="venue-capacity">Seating Capacity</label>
+            <input type="number" id="venue-capacity" class="form-control" min="1" placeholder="Maximum seating capacity" required>
+          </div>
+          <div style="display:flex; gap:10px; margin-top:15px;">
+            <button type="submit" class="btn btn-primary" style="flex-grow:1;" id="venue-submit-btn">Save Venue <i class="fa-solid fa-save"></i></button>
+            <button type="button" class="btn btn-secondary" id="venue-cancel-btn" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Venues Table List -->
+      <div class="glass" style="padding:30px;">
+        <h3 style="font-size:1.2rem; margin-bottom:20px;">Active Venues</h3>
+        <div class="table-responsive" style="margin-bottom:0;">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Venue Name</th>
+                <th>Location</th>
+                <th>Capacity</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="venues-table-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. Secure Administrator Portal.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

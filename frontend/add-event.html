@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Event Form | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar" style="border-bottom: 2px solid var(--danger);">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap" style="color:var(--danger);"></i>
+      <span>CampusConnect <span style="font-size:0.75rem; color:var(--danger); border:1px solid var(--danger); padding:2px 6px; border-radius:4px; margin-left:6px;">ADMIN</span></span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage-events.html" class="active">Manage Events</a></li>
+      <li><a href="manage-venues.html">Venues</a></li>
+      <li><a href="manage-departments.html">Departments</a></li>
+      <li><a href="bookings.html">All Bookings</a></li>
+      <li><a href="manage-users.html">Users</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="user-profile-menu" style="display:flex; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem; color:var(--danger);">Admin Console</span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div style="margin-bottom:20px;">
+      <a href="manage-events.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Manage Events</a>
+    </div>
+
+    <!-- Event Form Card -->
+    <div class="glass form-box" style="max-width:650px; margin: 0 auto; padding:40px;">
+      <div class="form-header" style="text-align:left; border-bottom:1px solid var(--glass-border); padding-bottom:15px; margin-bottom:25px;">
+        <h2 id="event-form-title">Create New Event</h2>
+        <p style="font-size:0.85rem;">Input details to list event in public portal</p>
+      </div>
+
+      <form id="event-editor-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="edit-event-name">Event Title</label>
+          <input type="text" id="edit-event-name" class="form-control" placeholder="e.g. Hackathon 2026" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+          <div class="form-group">
+            <label class="form-label" for="edit-event-date">Date</label>
+            <input type="date" id="edit-event-date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-event-time">Time</label>
+            <input type="time" id="edit-event-time" class="form-control" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+          <div class="form-group">
+            <label class="form-label" for="edit-event-dept">Department</label>
+            <select id="edit-event-dept" class="form-control" required>
+              <option value="">Select Department</option>
+              <!-- Dynamic departments -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-event-venue">Hosting Venue</label>
+            <select id="edit-event-venue" class="form-control" required>
+              <option value="">Select Venue</option>
+              <!-- Dynamic venues -->
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-event-seats">Total Capacity (Seats)</label>
+          <input type="number" id="edit-event-seats" class="form-control" min="1" placeholder="Enter seat limit" required>
+          <small style="font-size:0.75rem; color:var(--text-secondary); margin-top:5px; display:block;" id="venue-capacity-hint">
+            Note: Event capacity cannot exceed the chosen venue's maximum capacity.
+          </small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:15px;" id="event-form-submit-btn">
+          Create Event <i class="fa-solid fa-square-plus"></i>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. Secure Administrator Portal.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

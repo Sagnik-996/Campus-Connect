@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Events | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>CampusConnect</span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="events.html" class="active">Events</a></li>
+      <li class="user-link" style="display:none;"><a href="my-bookings.html">My Bookings</a></li>
+      <li class="user-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      <li class="admin-link" style="display:none;"><a href="admin-dashboard.html">Admin Panel</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="auth-buttons">
+        <a href="login.html" class="btn btn-secondary">Login</a>
+        <a href="register.html" class="btn btn-primary">Register</a>
+      </div>
+      <div id="user-profile-menu" style="display:none; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem;"></span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Events Listing Container -->
+  <main class="container">
+    <div style="margin-bottom:30px;">
+      <h1 style="font-size:2.2rem; margin-bottom:10px;">Explore Campus Events</h1>
+      <p style="color:var(--text-secondary);">Browse upcoming college events, workshops, hackathons, and lectures.</p>
+    </div>
+
+    <!-- Search and Filters Section -->
+    <section class="glass search-filter-section" style="padding:20px;">
+      <div class="search-box-wrapper">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="event-search" class="form-control search-control" placeholder="Search events, departments, venues...">
+      </div>
+      <div class="filter-select-wrapper">
+        <select id="event-dept-filter" class="form-control filter-select">
+          <option value="">All Departments</option>
+          <!-- Dynamic options loaded via script -->
+        </select>
+      </div>
+      <div class="filter-select-wrapper">
+        <select id="event-venue-filter" class="form-control filter-select">
+          <option value="">All Venues</option>
+          <!-- Dynamic options loaded via script -->
+        </select>
+      </div>
+    </section>
+
+    <!-- Events Cards Grid -->
+    <section>
+      <div id="events-list-container" class="events-grid">
+        <!-- Event Cards will be dynamically injected here -->
+        <div style="grid-column:1/-1; text-align:center; padding:50px;">
+          <div class="loader-spinner"></div>
+          <p style="margin-top:15px; color:var(--text-secondary);">Loading campus events...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

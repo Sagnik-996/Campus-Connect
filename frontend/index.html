@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect | College Event Booking Portal</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>CampusConnect</span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li class="user-link" style="display:none;"><a href="my-bookings.html">My Bookings</a></li>
+      <li class="user-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      <li class="admin-link" style="display:none;"><a href="admin-dashboard.html">Admin Panel</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="auth-buttons">
+        <a href="login.html" class="btn btn-secondary">Login</a>
+        <a href="register.html" class="btn btn-primary">Register</a>
+      </div>
+      <div id="user-profile-menu" style="display:none; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem;"></span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="container">
+    <section class="hero">
+      <h1>Streamline Your College <br><span class="gradient-text">Event Experiences</span></h1>
+      <p>Discover, book, and organize seminars, hackathons, workshops, and college fests with ease. Join hundreds of students using CampusConnect.</p>
+      <div>
+        <a href="events.html" class="btn btn-primary" style="font-size:1.05rem; padding:12px 28px;">Browse Events <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="admin-login.html" class="btn btn-secondary" style="margin-left:10px; font-size:1.05rem; padding:12px 28px;">Admin Console</a>
+      </div>
+    </section>
+
+    <!-- Quick Features -->
+    <section style="margin-top: 60px;">
+      <h2 style="text-align:center; margin-bottom:40px; font-size:2rem;">Why Use CampusConnect?</h2>
+      <div class="dashboard-grid">
+        <div class="glass stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+          <div class="stat-info">
+            <h3 style="font-size:1.1rem; margin-bottom:5px;">Instant Booking</h3>
+            <p style="font-size:0.9rem; font-weight:400; color:var(--text-secondary);">Reserve seats for workshops or hackathons with one click. Get instant status.</p>
+          </div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-chair"></i></div>
+          <div class="stat-info">
+            <h3 style="font-size:1.1rem; margin-bottom:5px;">Live Seat Tracking</h3>
+            <p style="font-size:0.9rem; font-weight:400; color:var(--text-secondary);">See live seat capacities and indicators. No overbooking, ever.</p>
+          </div>
+        </div>
+        <div class="glass stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-building-shield"></i></div>
+          <div class="stat-info">
+            <h3 style="font-size:1.1rem; margin-bottom:5px;">Department Organized</h3>
+            <p style="font-size:0.9rem; font-weight:400; color:var(--text-secondary);">Explore events curated specifically by CSE, AI&ML, or other branches.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. Built with MySQL, Express, and Vanilla CSS.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

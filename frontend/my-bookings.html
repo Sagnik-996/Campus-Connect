@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>CampusConnect</span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li><a href="my-bookings.html" class="active">My Bookings</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li class="admin-link" style="display:none;"><a href="admin-dashboard.html">Admin Panel</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="user-profile-menu" style="display:flex; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem;"></span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- My Bookings Main Content -->
+  <main class="container">
+    <div style="margin-bottom:30px;">
+      <h1 style="font-size:2.2rem; margin-bottom:10px;">My Booked Events</h1>
+      <p style="color:var(--text-secondary);">Review your registered tickets. You can cancel reservations before the event date.</p>
+    </div>
+
+    <!-- Bookings Table -->
+    <section class="glass" style="padding:30px;">
+      <div id="bookings-table-wrapper" class="table-responsive" style="display:none;">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Event Name</th>
+              <th>Department</th>
+              <th>Venue / Location</th>
+              <th>Event Date</th>
+              <th>Event Time</th>
+              <th>Seats Booked</th>
+              <th>Booked Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-list-tbody">
+            <!-- Dynamic bookings injected here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Loading State -->
+      <div id="bookings-loading" style="text-align:center; padding:40px;">
+        <div class="loader-spinner"></div>
+        <p style="margin-top:15px; color:var(--text-secondary);">Loading your tickets...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="bookings-empty" style="text-align:center; padding:50px; display:none;">
+        <i class="fa-solid fa-ticket" style="font-size:3.5rem; color:var(--text-muted); margin-bottom:15px;"></i>
+        <h3 style="font-size:1.2rem; margin-bottom:10px;">No bookings found</h3>
+        <p style="color:var(--text-secondary); margin-bottom:20px;">You haven't reserved any seats for upcoming events yet.</p>
+        <a href="events.html" class="btn btn-primary">Find Events <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>
