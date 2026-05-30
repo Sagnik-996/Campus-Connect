@@ -13,14 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Since we use sessions (credentials), we must define a specific origin or reflect the requesting origin
 // and set credentials: true.
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl) or local origins
-    if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true
 }));
 
