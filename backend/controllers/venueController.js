@@ -3,7 +3,7 @@ const pool = require('../models/db');
 // List all venues
 async function getAllVenues(req, res) {
   try {
-    const [venues] = await pool.query('SELECT * FROM VENUES ORDER BY venue_id ASC');
+    const { rows: venues } = await pool.query('SELECT * FROM venues ORDER BY venue_id ASC');
     return res.status(200).json(venues);
   } catch (err) {
     console.error('Get All Venues Error:', err);
@@ -24,13 +24,13 @@ async function addVenue(req, res) {
   }
 
   try {
-    const [result] = await pool.query(
-      'INSERT INTO VENUES (venue_name, location, capacity) VALUES (?, ?, ?)',
+    const result = await pool.query(
+      'INSERT INTO venues (venue_name, location, capacity) VALUES ($1, $2, $3) RETURNING venue_id',
       [venue_name.trim(), location.trim(), capacityVal]
     );
     return res.status(201).json({
       message: 'Venue added successfully!',
-      venue_id: result.insertId
+      venue_id: result.rows[0].venue_id
     });
   } catch (err) {
     console.error('Add Venue Error:', err);
@@ -53,11 +53,11 @@ async function editVenue(req, res) {
   }
 
   try {
-    const [result] = await pool.query(
-      'UPDATE VENUES SET venue_name = ?, location = ?, capacity = ? WHERE venue_id = ?',
+    const result = await pool.query(
+      'UPDATE venues SET venue_name = $1, location = $2, capacity = $3 WHERE venue_id = $4',
       [venue_name.trim(), location.trim(), capacityVal, id]
     );
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Venue not found.' });
     }
     return res.status(200).json({ message: 'Venue updated successfully!' });
@@ -72,8 +72,8 @@ async function deleteVenue(req, res) {
   const { id } = req.params;
 
   try {
-    const [result] = await pool.query('DELETE FROM VENUES WHERE venue_id = ?', [id]);
-    if (result.affectedRows === 0) {
+    const result = await pool.query('DELETE FROM venues WHERE venue_id = $1', [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Venue not found.' });
     }
     return res.status(200).json({ message: 'Venue deleted successfully!' });

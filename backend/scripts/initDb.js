@@ -1,37 +1,18 @@
-const mysql = require('mysql2/promise');
-const bcrypt = require('bcryptjs');
-const { execSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const bcrypt = require('bcryptjs');
+const pool = require('../models/db');
 
-const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'Sagnik2006',
-  database: process.env.DB_NAME || 'event_booking'
-};
-
+// This intentionally resets every application table. Run only against a new
+// Supabase project or when you explicitly want to replace all existing data.
 async function initAndSeed() {
-  console.log('Resetting database and loading exact schema/sample data...');
-  
+  const client = await pool.connect();
   try {
-    // 1. Execute SQL schema file via MySQL CLI client to guarantee correct multi-line execution
-    const sqlFilePath = path.join(__dirname, '../database.sql');
-    const mysqlCmd = `/usr/local/mysql/bin/mysql -u ${dbConfig.user} -p"${dbConfig.password}" < "${sqlFilePath}"`;
-    execSync(mysqlCmd, { stdio: 'inherit' });
-    console.log('MySQL schema file loaded successfully via CLI.');
+    console.log('Resetting PostgreSQL schema and loading sample data...');
+    const schemaSql = fs.readFileSync(path.join(__dirname, '../database.sql'), 'utf8');
+    await client.query(schemaSql);
+    await client.query('BEGIN');
 
-    // 2. Connect to database using connection pool to do password hashing and bookings seed
-    const connection = await mysql.createConnection(dbConfig);
-    console.log('Connected to event_booking database.');
-
-    // 3. Clear users and bookings (tables already cleared by DROP TABLE in database.sql, but let's be safe)
-    await connection.query('SET FOREIGN_KEY_CHECKS = 0;');
-    await connection.query('TRUNCATE TABLE BOOKINGS;');
-    await connection.query('TRUNCATE TABLE USERS;');
-    await connection.query('SET FOREIGN_KEY_CHECKS = 1;');
-
-    // 4. Seed sample Student Users (with bcrypt hashing)
     const sampleStudents = [
       { name: 'Sagnik', email: 'sagnik@email.com', password: '1234' },
       { name: 'Rahul Sharma', email: 'rahul@gmail.com', password: 'rahul123' },
@@ -41,22 +22,14 @@ async function initAndSeed() {
       { name: 'Arjun Reddy', email: 'arjun@gmail.com', password: 'arjun222' }
     ];
 
-    console.log('Hashing and seeding student credentials...');
-    for (let s of sampleStudents) {
-      const hash = await bcrypt.hash(s.password, 10);
-      await connection.query(
-        'INSERT INTO USERS (name, email, password) VALUES (?, ?, ?)',
-        [s.name, s.email, hash]
+    for (const student of sampleStudents) {
+      const password = await bcrypt.hash(student.password, 10);
+      await client.query(
+        'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)',
+        [student.name, student.email, password]
       );
     }
-    console.log('Student users seeded.');
 
-    // 5. Seed some initial bookings and decrement available event seats
-    // User 1 (Sagnik) books Event 1 (IEEE Orientation) for 2 seats
-    // User 2 (Rahul) books Event 3 (AI Workshop) for 3 seats
-    // User 3 (Ananya) books Event 5 (Robotics Expo) for 4 seats
-    // User 4 (Kiran) books Event 1 (IEEE Orientation) for 1 seat
-    // User 5 (Megha) books Event 7 (Placement Readiness) for 2 seats
     const initialBookings = [
       { user_id: 1, event_id: 1, seats: 2, ev_date: '2026-06-15', ev_time: '10:00:00' },
       { user_id: 2, event_id: 3, seats: 3, ev_date: '2026-06-22', ev_time: '09:30:00' },
@@ -65,33 +38,26 @@ async function initAndSeed() {
       { user_id: 5, event_id: 7, seats: 2, ev_date: '2026-07-05', ev_time: '09:00:00' }
     ];
 
-    console.log('Seeding initial bookings and adjusting available seat counts...');
-    for (let b of initialBookings) {
-      // 1. Insert booking row
-      await connection.query(
-        'INSERT INTO BOOKINGS (user_id, event_id, seats_booked, booking_date, event_date, event_time) VALUES (?, ?, ?, CURDATE(), ?, ?)',
-        [b.user_id, b.event_id, b.seats, b.ev_date, b.ev_time]
+    for (const booking of initialBookings) {
+      await client.query(
+        `INSERT INTO bookings (user_id, event_id, seats_booked, booking_date, event_date, event_time)
+         VALUES ($1, $2, $3, CURRENT_DATE, $4, $5)`,
+        [booking.user_id, booking.event_id, booking.seats, booking.ev_date, booking.ev_time]
       );
-
-      // 2. Decrement available seats in events
-      const [events] = await connection.query('SELECT total_seats, available_seats FROM EVENTS WHERE event_id = ?', [b.event_id]);
-      if (events.length > 0) {
-        const newAvailable = events[0].available_seats - b.seats;
-        await connection.query('UPDATE EVENTS SET available_seats = ? WHERE event_id = ?', [newAvailable, b.event_id]);
-      }
+      await client.query(
+        'UPDATE events SET available_seats = available_seats - $1 WHERE event_id = $2',
+        [booking.seats, booking.event_id]
+      );
     }
-
-    console.log('Initial bookings seeded successfully.');
-    console.log('==================================================');
-    console.log(' DATABASE INITIALIZATION SUCCEEDED!              ');
-    console.log(' Schema, Venues, Depts, Events loaded.            ');
-    console.log(' Admin: admin / admin123                          ');
-    console.log(' Student: sagnik@email.com / 1234                ');
-    console.log('==================================================');
-    
-    await connection.end();
+    await client.query('COMMIT');
+    console.log('PostgreSQL initialization succeeded. Admin: admin / admin123');
   } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
     console.error('Database seeding failed:', err);
+    process.exitCode = 1;
+  } finally {
+    client.release();
+    await pool.end();
   }
 }
 

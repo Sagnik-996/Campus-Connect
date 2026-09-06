@@ -18,7 +18,11 @@ async function registerUser(req, res) {
 
   try {
     // Prevent duplicate email registration
-    const [existing] = await pool.query('SELECT user_id FROM USERS WHERE email = ?', [email]);
+    const { rows: existing } = await pool.query(
+      'SELECT user_id FROM users WHERE email = $1',
+      [email.trim().toLowerCase()]
+    );
+
     if (existing.length > 0) {
       return res.status(400).json({ error: 'A user with this email already exists.' });
     }
@@ -27,15 +31,16 @@ async function registerUser(req, res) {
     const hashedPassword = await hashPassword(password);
 
     // Insert user
-    const [result] = await pool.query(
-      'INSERT INTO USERS (name, email, password) VALUES (?, ?, ?)',
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING user_id',
       [name.trim(), email.trim().toLowerCase(), hashedPassword]
     );
 
     return res.status(201).json({
       message: 'Registration successful! Please log in.',
-      userId: result.insertId
+      userId: result.rows[0].user_id
     });
+
   } catch (err) {
     console.error('Registration Error:', err);
     return res.status(500).json({ error: 'Server error during registration.' });
@@ -51,31 +56,35 @@ async function loginUser(req, res) {
   }
 
   try {
-    const [users] = await pool.query('SELECT * FROM USERS WHERE email = ?', [email.trim().toLowerCase()]);
+    const { rows: users } = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email.trim().toLowerCase()]
+    );
+
     if (users.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
     const user = users[0];
     const match = await verifyPassword(password, user.password);
+
     if (!match) {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    // Create user session
     req.session.user = {
       user_id: user.user_id,
       name: user.name,
       email: user.email,
       role: 'user'
     };
-    
-    // Explicitly save the session
+
     req.session.save((err) => {
       if (err) {
         console.error('Session Save Error:', err);
         return res.status(500).json({ error: 'Failed to initialize session.' });
       }
+
       return res.status(200).json({
         message: 'Login successful!',
         user: {
@@ -86,6 +95,7 @@ async function loginUser(req, res) {
         }
       });
     });
+
   } catch (err) {
     console.error('User Login Error:', err);
     return res.status(500).json({ error: 'Server error during login.' });
@@ -101,18 +111,22 @@ async function loginAdmin(req, res) {
   }
 
   try {
-    const [admins] = await pool.query('SELECT * FROM ADMINS WHERE username = ?', [username.trim()]);
+    const { rows: admins } = await pool.query(
+      'SELECT * FROM admins WHERE username = $1',
+      [username.trim()]
+    );
+
     if (admins.length === 0) {
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
 
     const admin = admins[0];
     const match = await verifyPassword(password, admin.password);
+
     if (!match) {
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
 
-    // Create admin session
     req.session.admin = {
       admin_id: admin.admin_id,
       username: admin.username,
@@ -124,6 +138,7 @@ async function loginAdmin(req, res) {
         console.error('Admin Session Save Error:', err);
         return res.status(500).json({ error: 'Failed to initialize session.' });
       }
+
       return res.status(200).json({
         message: 'Admin login successful!',
         admin: {
@@ -133,6 +148,7 @@ async function loginAdmin(req, res) {
         }
       });
     });
+
   } catch (err) {
     console.error('Admin Login Error:', err);
     return res.status(500).json({ error: 'Server error during admin login.' });
@@ -146,7 +162,8 @@ function logout(req, res) {
       console.error('Logout Session Destroy Error:', err);
       return res.status(500).json({ error: 'Failed to log out.' });
     }
-    res.clearCookie('connect.sid'); // default express-session cookie name
+
+    res.clearCookie('connect.sid');
     return res.status(200).json({ message: 'Logged out successfully.' });
   });
 }
@@ -154,11 +171,21 @@ function logout(req, res) {
 // 5. Session Status
 function getSessionStatus(req, res) {
   if (req.session.admin) {
-    return res.status(200).json({ loggedIn: true, role: 'admin', session: req.session.admin });
+    return res.status(200).json({
+      loggedIn: true,
+      role: 'admin',
+      session: req.session.admin
+    });
   } else if (req.session.user) {
-    return res.status(200).json({ loggedIn: true, role: 'user', session: req.session.user });
+    return res.status(200).json({
+      loggedIn: true,
+      role: 'user',
+      session: req.session.user
+    });
   } else {
-    return res.status(200).json({ loggedIn: false });
+    return res.status(200).json({
+      loggedIn: false
+    });
   }
 }
 

@@ -4,7 +4,7 @@ const { hashPassword } = require('../authentication/auth');
 // 1. Get All Users (Admin Only)
 async function getAllUsers(req, res) {
   try {
-    const [users] = await pool.query('SELECT user_id, name, email FROM USERS ORDER BY name ASC');
+    const { rows: users } = await pool.query('SELECT user_id, name, email FROM users ORDER BY name ASC');
     return res.status(200).json(users);
   } catch (err) {
     console.error('Get All Users Error:', err);
@@ -17,7 +17,7 @@ async function getProfile(req, res) {
   const userId = req.session.user.user_id;
 
   try {
-    const [users] = await pool.query('SELECT user_id, name, email FROM USERS WHERE user_id = ?', [userId]);
+    const { rows: users } = await pool.query('SELECT user_id, name, email FROM users WHERE user_id = $1', [userId]);
     if (users.length === 0) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -39,21 +39,21 @@ async function updateProfile(req, res) {
 
   try {
     // Check if new email is already taken by another user
-    const [existing] = await pool.query('SELECT user_id FROM USERS WHERE email = ? AND user_id != ?', [email.trim().toLowerCase(), userId]);
+    const { rows: existing } = await pool.query('SELECT user_id FROM users WHERE email = $1 AND user_id != $2', [email.trim().toLowerCase(), userId]);
     if (existing.length > 0) {
       return res.status(400).json({ error: 'Email is already in use by another user.' });
     }
 
-    let query = 'UPDATE USERS SET name = ?, email = ?';
+    let query = 'UPDATE users SET name = $1, email = $2';
     const params = [name.trim(), email.trim().toLowerCase()];
 
     if (new_password && new_password.trim() !== '') {
       const hashed = await hashPassword(new_password);
-      query += ', password = ?';
+      query += ', password = $3';
       params.push(hashed);
     }
 
-    query += ' WHERE user_id = ?';
+    query += ` WHERE user_id = $${params.length + 1}`;
     params.push(userId);
 
     await pool.query(query, params);

@@ -3,7 +3,7 @@ const pool = require('../models/db');
 // List all departments
 async function getAllDepartments(req, res) {
   try {
-    const [depts] = await pool.query('SELECT * FROM DEPARTMENTS ORDER BY dept_id ASC');
+    const { rows: depts } = await pool.query('SELECT * FROM departments ORDER BY dept_id ASC');
     return res.status(200).json(depts);
   } catch (err) {
     console.error('Get All Departments Error:', err);
@@ -19,10 +19,10 @@ async function addDepartment(req, res) {
   }
 
   try {
-    const [result] = await pool.query('INSERT INTO DEPARTMENTS (dept_name) VALUES (?)', [dept_name.trim()]);
+    const result = await pool.query('INSERT INTO departments (dept_name) VALUES ($1) RETURNING dept_id', [dept_name.trim()]);
     return res.status(201).json({
       message: 'Department added successfully!',
-      dept_id: result.insertId,
+      dept_id: result.rows[0].dept_id,
       dept_name: dept_name.trim()
     });
   } catch (err) {
@@ -41,8 +41,8 @@ async function editDepartment(req, res) {
   }
 
   try {
-    const [result] = await pool.query('UPDATE DEPARTMENTS SET dept_name = ? WHERE dept_id = ?', [dept_name.trim(), id]);
-    if (result.affectedRows === 0) {
+    const result = await pool.query('UPDATE departments SET dept_name = $1 WHERE dept_id = $2', [dept_name.trim(), id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Department not found.' });
     }
     return res.status(200).json({ message: 'Department updated successfully!' });
@@ -57,8 +57,8 @@ async function deleteDepartment(req, res) {
   const { id } = req.params;
 
   try {
-    const [result] = await pool.query('DELETE FROM DEPARTMENTS WHERE dept_id = ?', [id]);
-    if (result.affectedRows === 0) {
+    const result = await pool.query('DELETE FROM departments WHERE dept_id = $1', [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Department not found.' });
     }
     return res.status(200).json({ message: 'Department deleted successfully!' });

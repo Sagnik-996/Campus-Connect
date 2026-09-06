@@ -6,33 +6,38 @@ async function getAllEvents(req, res) {
 
   let query = `
     SELECT e.*, d.dept_name, v.venue_name, v.location, v.capacity as venue_capacity
-    FROM EVENTS e
-    JOIN DEPARTMENTS d ON e.dept_id = d.dept_id
-    JOIN VENUES v ON e.venue_id = v.venue_id
+    FROM events e
+    JOIN departments d ON e.dept_id = d.dept_id
+    JOIN venues v ON e.venue_id = v.venue_id
     WHERE 1=1
   `;
   const params = [];
 
-  if (search) {
-    query += ' AND (e.event_name LIKE ? OR d.dept_name LIKE ? OR v.venue_name LIKE ?)';
-    const searchParam = `%${search}%`;
-    params.push(searchParam, searchParam, searchParam);
-  }
-
-  if (dept_id) {
-    query += ' AND e.dept_id = ?';
-    params.push(dept_id);
-  }
-
-  if (venue_id) {
-    query += ' AND e.venue_id = ?';
-    params.push(venue_id);
-  }
-
-  query += ' ORDER BY e.event_date ASC, e.event_time ASC';
 
   try {
-    const [events] = await pool.query(query, params);
+   let index = 1;
+
+if (search) {
+  query += ` AND (e.event_name ILIKE $${index} OR d.dept_name ILIKE $${index + 1} OR v.venue_name ILIKE $${index + 2})`;
+  const searchParam = `%${search}%`;
+  params.push(searchParam, searchParam, searchParam);
+  index += 3;
+}
+
+if (dept_id) {
+  query += ` AND e.dept_id = $${index}`;
+  params.push(dept_id);
+  index++;
+}
+
+if (venue_id) {
+  query += ` AND e.venue_id = $${index}`;
+  params.push(venue_id);
+}
+query += ' ORDER BY e.event_date ASC, e.event_time ASC';
+
+
+const { rows: events } = await pool.query(query, params);
     return res.status(200).json(events);
   } catch (err) {
     console.error('Get All Events Error:', err);
@@ -45,12 +50,12 @@ async function getEventById(req, res) {
   const { id } = req.params;
 
   try {
-    const [events] = await pool.query(
+    const { rows: events } = await pool.query(
       `SELECT e.*, d.dept_name, v.venue_name, v.location, v.capacity as venue_capacity
-       FROM EVENTS e
-       JOIN DEPARTMENTS d ON e.dept_id = d.dept_id
-       JOIN VENUES v ON e.venue_id = v.venue_id
-       WHERE e.event_id = ?`,
+       FROM events e
+       JOIN departments d ON e.dept_id = d.dept_id
+       JOIN venues v ON e.venue_id = v.venue_id
+       WHERE e.event_id = $1`,
       [id]
     );
 
@@ -81,7 +86,7 @@ async function createEvent(req, res) {
 
   try {
     // Verify Venue exists and has sufficient capacity
-    const [venues] = await pool.query('SELECT capacity FROM VENUES WHERE venue_id = ?', [venue_id]);
+    const { rows: venues } = await pool.query('SELECT capacity FROM venues WHERE venue_id = $1', [venue_id]);
     if (venues.length === 0) {
       return res.status(400).json({ error: 'Selected venue does not exist.' });
     }
@@ -92,21 +97,31 @@ async function createEvent(req, res) {
     }
 
     // Verify Department exists
-    const [depts] = await pool.query('SELECT dept_id FROM DEPARTMENTS WHERE dept_id = ?', [dept_id]);
+    const { rows: depts } = await pool.query('SELECT dept_id FROM departments WHERE dept_id = $1', [dept_id]);
     if (depts.length === 0) {
       return res.status(400).json({ error: 'Selected department does not exist.' });
     }
 
     // Create Event
-    const [result] = await pool.query(
-      `INSERT INTO EVENTS (event_name, event_date, event_time, total_seats, available_seats, venue_id, dept_id) 
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [event_name.trim(), event_date, event_time, seats, seats, venue_id, dept_id]
-    );
+    const result = await pool.query(
+`INSERT INTO events
+(event_name,event_date,event_time,total_seats,available_seats,venue_id,dept_id)
+VALUES ($1,$2,$3,$4,$5,$6,$7)
+RETURNING event_id`,
+[
+event_name.trim(),
+event_date,
+event_time,
+seats,
+seats,
+venue_id,
+dept_id
+]
+);
 
     return res.status(201).json({
       message: 'Event created successfully!',
-      event_id: result.insertId
+      event_id: result.rows[0].event_id
     });
   } catch (err) {
     console.error('Create Event Error:', err);
@@ -130,7 +145,7 @@ async function updateEvent(req, res) {
 
   try {
     // Get existing event details
-    const [currentEvents] = await pool.query('SELECT total_seats, available_seats FROM EVENTS WHERE event_id = ?', [id]);
+    const { rows: currentEvents } = await pool.query('SELECT total_seats, available_seats FROM events WHERE event_id = $1', [id]);
     if (currentEvents.length === 0) {
       return res.status(404).json({ error: 'Event not found.' });
     }
@@ -146,7 +161,7 @@ async function updateEvent(req, res) {
     }
 
     // Verify Venue exists and has capacity
-    const [venues] = await pool.query('SELECT capacity FROM VENUES WHERE venue_id = ?', [venue_id]);
+    const { rows: venues } = await pool.query('SELECT capacity FROM venues WHERE venue_id = $1', [venue_id]);
     if (venues.length === 0) {
       return res.status(400).json({ error: 'Selected venue does not exist.' });
     }
@@ -157,7 +172,7 @@ async function updateEvent(req, res) {
     }
 
     // Verify Department exists
-    const [depts] = await pool.query('SELECT dept_id FROM DEPARTMENTS WHERE dept_id = ?', [dept_id]);
+    const { rows: depts } = await pool.query('SELECT dept_id FROM departments WHERE dept_id = $1', [dept_id]);
     if (depts.length === 0) {
       return res.status(400).json({ error: 'Selected department does not exist.' });
     }
@@ -167,9 +182,16 @@ async function updateEvent(req, res) {
 
     // Update
     await pool.query(
-      `UPDATE EVENTS 
-       SET event_name = ?, event_date = ?, event_time = ?, total_seats = ?, available_seats = ?, venue_id = ?, dept_id = ? 
-       WHERE event_id = ?`,
+      `UPDATE events
+SET
+event_name=$1,
+event_date=$2,
+event_time=$3,
+total_seats=$4,
+available_seats=$5,
+venue_id=$6,
+dept_id=$7
+WHERE event_id=$8`,
       [event_name.trim(), event_date, event_time, seats, newAvailable, venue_id, dept_id, id]
     );
 
@@ -185,8 +207,8 @@ async function deleteEvent(req, res) {
   const { id } = req.params;
 
   try {
-    const [result] = await pool.query('DELETE FROM EVENTS WHERE event_id = ?', [id]);
-    if (result.affectedRows === 0) {
+    const result = await pool.query('DELETE FROM events WHERE event_id = $1', [id]);
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Event not found.' });
     }
     return res.status(200).json({ message: 'Event deleted successfully!' });
@@ -199,24 +221,26 @@ async function deleteEvent(req, res) {
 // 6. Get Event Statistics (Admin Only)
 async function getEventStatistics(req, res) {
   try {
-    const [totalEventsResult] = await pool.query('SELECT COUNT(*) as count FROM EVENTS');
-    const [totalBookingsResult] = await pool.query('SELECT COUNT(*) as count, SUM(seats_booked) as total_seats_booked FROM BOOKINGS');
-    const [totalUsersResult] = await pool.query('SELECT COUNT(*) as count FROM USERS');
+    const { rows: totalEventsResult } = await pool.query('SELECT COUNT(*) as count FROM events');
+    const { rows: totalBookingsResult } = await pool.query(
+'SELECT COUNT(*) AS count, COALESCE(SUM(seats_booked), 0) AS total_seats_booked FROM bookings'
+);
+    const { rows: totalUsersResult } = await pool.query('SELECT COUNT(*) as count FROM users');
 
     // Bookings per department
-    const [deptStats] = await pool.query(`
-      SELECT d.dept_name, COUNT(b.booking_id) as booking_count, IFNULL(SUM(b.seats_booked), 0) as seats_booked
-      FROM DEPARTMENTS d
-      LEFT JOIN EVENTS e ON d.dept_id = e.dept_id
-      LEFT JOIN BOOKINGS b ON e.event_id = b.event_id
+    const { rows: deptStats } = await pool.query(`
+      SELECT d.dept_name, COUNT(b.booking_id) as booking_count, COALESCE(SUM(b.seats_booked), 0) as seats_booked
+      FROM departments d
+      LEFT JOIN events e ON d.dept_id = e.dept_id
+      LEFT JOIN bookings b ON e.event_id = b.event_id
       GROUP BY d.dept_id, d.dept_name
     `);
 
     // Most popular events
-    const [popularEvents] = await pool.query(`
-      SELECT e.event_name, COUNT(b.booking_id) as booking_count, IFNULL(SUM(b.seats_booked), 0) as seats_booked
-      FROM EVENTS e
-      LEFT JOIN BOOKINGS b ON e.event_id = b.event_id
+    const { rows: popularEvents } = await pool.query(`
+      SELECT e.event_name, COUNT(b.booking_id) as booking_count, COALESCE(SUM(b.seats_booked), 0) as seats_booked
+      FROM events e
+      LEFT JOIN bookings b ON e.event_id = b.event_id
       GROUP BY e.event_id, e.event_name
       ORDER BY seats_booked DESC
       LIMIT 5
