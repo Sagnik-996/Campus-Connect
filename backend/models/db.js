@@ -2,27 +2,16 @@ const { Pool } = require('pg');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
-let poolConfig = {};
+const connectionString = (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '')
+  ? process.env.DATABASE_URL.trim()
+  : 'postgresql://postgres:rumelasarkar@db.elsounsxnuhgpzntwpxk.supabase.co:5432/postgres';
 
-if (process.env.DATABASE_URL && process.env.DATABASE_URL.trim() !== '') {
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL.trim(),
-    ssl: {
-      rejectUnauthorized: false
-    }
-  };
-} else {
-  poolConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT, 10) || 5432,
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'postgres',
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-  };
-}
-
-const pool = new Pool(poolConfig);
+const pool = new Pool({
+  connectionString: connectionString,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 pool.on('error', (err) => {
   console.error('Unexpected error on idle PostgreSQL client', err);

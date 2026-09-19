@@ -1,0 +1,10 @@
+{
+  "name": "campus-connect",
+  "version": "2.0.0",
+  "description": "CampusConnect - College Event Booking System",
+  "scripts": {
+    "postinstall": "cd backend && npm install",
+    "build": "cd backend && npm install",
+    "start": "node backend/server.js"
+  }
+}

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: campus-connect
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://postgres:rumelasarkar@db.elsounsxnuhgpzntwpxk.supabase.co:5432/postgres
+      - key: SESSION_SECRET
+        value: campusconnect_production_session_secret_key_987654321
+      - key: NODE_ENV
+        value: production
