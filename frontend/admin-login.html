@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>CampusConnect <span style="font-size:0.75rem; color:var(--danger); border:1px solid var(--danger); padding:2px 6px; border-radius:4px; margin-left:6px;">ADMIN</span></span>
+    </a>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <a href="index.html" class="btn btn-secondary"><i class="fa-solid fa-home"></i> Home</a>
+    </div>
+  </header>
+
+  <!-- Admin Login Form -->
+  <main class="container" style="display:flex; justify-content:center; align-items:center;">
+    <div class="glass form-box" style="border-top: 4px solid var(--danger);">
+      <div class="form-header">
+        <h2>Admin Console</h2>
+        <p>Provide administration credentials below</p>
+      </div>
+      <form id="admin-login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="admin-username">Admin Username</label>
+          <input type="text" id="admin-username" class="form-control" placeholder="Enter username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="admin-password">Console Password</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-danger" style="width:100%; margin-top:10px;">
+          Access Console <i class="fa-solid fa-terminal"></i>
+        </button>
+      </form>
+      <div class="form-footer">
+        Student login? <a href="login.html" style="color:var(--text-primary);">Click Here</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. Restricted Access Area.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>

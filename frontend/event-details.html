@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details | CampusConnect</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts & Style -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fa-solid fa-graduation-cap"></i>
+      <span>CampusConnect</span>
+    </a>
+    <button class="burger" id="menu-toggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="events.html">Events</a></li>
+      <li class="user-link" style="display:none;"><a href="my-bookings.html">My Bookings</a></li>
+      <li class="user-link" style="display:none;"><a href="profile.html">Profile</a></li>
+      <li class="admin-link" style="display:none;"><a href="admin-dashboard.html">Admin Panel</a></li>
+    </ul>
+    <div class="nav-buttons">
+      <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+        <i class="fa-solid fa-sun"></i>
+      </button>
+      <div id="auth-buttons">
+        <a href="login.html" class="btn btn-secondary">Login</a>
+        <a href="register.html" class="btn btn-primary">Register</a>
+      </div>
+      <div id="user-profile-menu" style="display:none; align-items:center; gap:15px;">
+        <span id="nav-username" style="font-weight:600; font-size:0.9rem;"></span>
+        <button id="logout-btn" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div style="margin-bottom:20px;">
+      <a href="events.html" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Events</a>
+    </div>
+
+    <!-- Event Detail Card -->
+    <div class="glass" style="padding:40px; margin-bottom:30px; display:flex; flex-direction:column; gap:25px;" id="event-detail-card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px;">
+        <div>
+          <span class="badge badge-accent" id="detail-dept">Loading Dept</span>
+          <h1 style="font-size:2.5rem; margin-top:10px; margin-bottom:5px;" id="detail-title">Loading Event...</h1>
+        </div>
+        <div id="booking-widget" class="glass" style="padding:20px; min-width:280px; display:none;">
+          <h3 style="font-size:1.1rem; margin-bottom:15px; text-align:center;">Book Your Seats</h3>
+          <form id="booking-form">
+            <div class="form-group" style="margin-bottom:15px;">
+              <label class="form-label" for="booking-seats">Seats to Book</label>
+              <input type="number" id="booking-seats" class="form-control" min="1" max="10" value="1" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%;">
+              Confirm Booking <i class="fa-solid fa-ticket"></i>
+            </button>
+          </form>
+        </div>
+        <div id="booking-auth-prompt" class="glass" style="padding:20px; min-width:280px; text-align:center;">
+          <h3 style="font-size:1rem; margin-bottom:12px;">Sign in to Book Seats</h3>
+          <a href="login.html" class="btn btn-primary" style="width:100%;">Login to Book</a>
+        </div>
+      </div>
+
+      <hr style="border:none; border-top:1px solid var(--glass-border);">
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
+        <div class="glass stat-card" style="padding:15px;">
+          <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+          <div class="stat-info">
+            <h4>Date</h4>
+            <p id="detail-date" style="font-size:1.1rem; font-weight:600;">--/--/----</p>
+          </div>
+        </div>
+        <div class="glass stat-card" style="padding:15px;">
+          <div class="stat-icon"><i class="fa-solid fa-clock"></i></div>
+          <div class="stat-info">
+            <h4>Time</h4>
+            <p id="detail-time" style="font-size:1.1rem; font-weight:600;">--:--</p>
+          </div>
+        </div>
+        <div class="glass stat-card" style="padding:15px;">
+          <div class="stat-icon"><i class="fa-solid fa-location-dot"></i></div>
+          <div class="stat-info">
+            <h4>Venue</h4>
+            <p id="detail-venue" style="font-size:1.1rem; font-weight:600;">Loading...</p>
+            <span id="detail-location" style="font-size:0.75rem; color:var(--text-secondary);"></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;">
+        <h3 style="font-size:1.2rem; margin-bottom:10px;">Seat Availability</h3>
+        <div class="seat-status-container" style="max-width:500px; margin-bottom:0;">
+          <div class="seat-text">
+            <span id="detail-available">0 seats available</span>
+            <span id="detail-total">of 0 total</span>
+          </div>
+          <div class="seat-bar-outer" style="height:12px;">
+            <div id="detail-bar" class="seat-bar-inner" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="margin:0 auto; padding:0;">
+      <p>&copy; 2026 CampusConnect. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Script -->
+  <script src="js/script.js" defer></script>
+</body>
+</html>
