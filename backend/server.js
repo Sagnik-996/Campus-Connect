@@ -12,16 +12,9 @@ const PORT = process.env.PORT || 3000;
 // Trust proxy for Render/production reverse proxy
 app.set('trust proxy', 1);
 
-// CORS setup
+// CORS setup - Allow all origins dynamically with credentials
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests from localhost, render, or no origin (like mobile/curl)
-    if (!origin || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') || origin.includes('onrender.com')) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Permissive for production deployment
-    }
-  },
+  origin: true,
   credentials: true
 }));
 
@@ -35,9 +28,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // true on HTTPS in production
+    secure: false, // Safest for Render's reverse proxy terminating TLS
     httpOnly: true,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 1 day
   }
 }));
